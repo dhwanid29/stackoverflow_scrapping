@@ -5,13 +5,28 @@
 
 
 # useful for handling different item types with a single interface
+import logging
 from configparser import ConfigParser
 
+from django.conf import settings
 from itemadapter import ItemAdapter
 import psycopg2
+import pymongo
+from scrapy.exceptions import DropItem
+from scrapy_proxies.randomproxy import log
+
+from .items import ScrapeStackoverflowItem
 
 
 class ScrapeStackoverflowPipeline:
+
+    def __init__(self):
+        connection = pymongo.MongoClient(
+            "localhost",
+            27017
+        )
+        db = connection["stackoverflow"]
+        self.collection = db["questions"]
 
     # def __init__(self):
     #     print("INSIDE INIT")
@@ -49,9 +64,18 @@ class ScrapeStackoverflowPipeline:
     #     """)
 
     def process_item(self, item, spider):
-        # print(item['question'], 'CODEDEEEEEEEEEEEEEEEEEEE')
-        # print(item['verified_answer'][0], 'ANSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
-        # print(item, 'ITEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEMMMMMMMMMM')
-        # print('PIPELINESS', item['verified_answer'][0].strip('<p>,</p>'))
-        # print('PIPELINES DETAIL QUESTION', item['detail_question'])
+        item['code_block'] = str(item['code_block'])
+        print(item['code_block'], '11111111111111111111111111111111111111111111111111111111111111111111111111')
+        print(str(item['code_block']), '2222222222222222222222222222222222222222222222222222222222222222222222')
+        # data = dict(ScrapeStackoverflowItem(item))
+        valid = True
+        for data in item:
+            if not data:
+                valid = False
+                raise DropItem("Missing {0}!".format(data))
+        if valid:
+            print(dict(item), 'DICT ITEMS------------------------------------------------')
+            # print(data, 'DATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+            self.collection.insert_one(dict(item))
+            logging.info("Question added to MongoDB database!")
         return item

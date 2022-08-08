@@ -5,22 +5,17 @@
 
 import scrapy
 from scrapy.loader import ItemLoader
-from itemloaders.processors import TakeFirst, MapCompose, Join
+from itemloaders.processors import TakeFirst, MapCompose
 from w3lib.html import remove_tags
-
-
-# def remove_quotations(value):
-#     print(value, 'VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV')
-#     print(value.strip('", "'), 'VALUEEEEEEEEEEEEEEEEEEEEEEEEE')
-#     return value.strip('", "')
 
 
 class ScrapeStackoverflowItem(scrapy.Item):
     question = scrapy.Field(input_processor=MapCompose(remove_tags), output_processors=TakeFirst())
-    print(question, 'QQQQQQQQQQQQQQQQQQ')
     detail_question = scrapy.Field(input_processor=MapCompose(remove_tags), output_processors=TakeFirst())
-    print(detail_question, 'PIPIPIPIPIPIPIP')
     code_block = scrapy.Field(input_processor=MapCompose(remove_tags), output_processors=TakeFirst())
     verified_answer = scrapy.Field(input_processor=MapCompose(remove_tags), output_processors=TakeFirst())
     user_details_question = scrapy.Field(input_processor=MapCompose(remove_tags), output_processors=TakeFirst())
     user_details_answer = scrapy.Field(input_processor=MapCompose(remove_tags), output_processors=TakeFirst())
+    answer = scrapy.Field(input_processor=MapCompose(remove_tags), output_processors=TakeFirst())
+    verified_answer_code_block = scrapy.Field(input_processor=MapCompose(remove_tags), output_processors=TakeFirst())
+    answer_code_block = scrapy.Field(input_processor=MapCompose(remove_tags), output_processors=TakeFirst())
